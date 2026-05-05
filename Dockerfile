@@ -1,26 +1,14 @@
-FROM python:3.11-slim
+FROM python:3.9-slim
 
-ENV PYTHONPATH="/app"
-
-RUN sed -i 's/Components: main/Components: main contrib non-free non-free-firmware/' /etc/apt/sources.list.d/debian.sources && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
-        curl \
-        iputils-ping && \
-    curl -fsSL https://get.docker.com | sh && \
-    rm -rf /var/lib/apt/lists/*
-
-ENV PATH="/usr/games:${PATH}"
-
-RUN ln -s /usr/local/bin/python3 /usr/bin/python3
+# Install system-level git
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
+# Run the script
 CMD ["python", "service.py"]
-
 

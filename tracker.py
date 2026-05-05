@@ -30,6 +30,15 @@ def validate_env():
         return False
     return True
 
+def get_external_ip():
+    """Fetches the current external IP address."""
+    try:
+        response = requests.get('https://ipify.org', timeout=10)
+        return response.text
+    except Exception as err:
+        logging.error("IP check failed: %s", err)
+        return None
+
 def update_hosts_file(new_ip, hostname):
     """Updates the mounted hosts file with the new IP address."""
     hosts_path = "/app/hosts_mount"
@@ -114,15 +123,11 @@ def main():
                     update_hosts_file(data["IP"], os.getenv("HOME_HOSTNAME", "home.local"))
                     last_ip = data["IP"]
             else:
-                try:
-                    current_ip = requests.get('https://ipify.org', timeout=10).text
-                    if current_ip != last_ip:
-                        push_to_github(current_ip)
-                        last_ip = current_ip
-                except Exception as err:
-                    logging.error("IP check failed: %s", err)
+                current_ip = get_external_ip()
+                if current_ip and current_ip != last_ip:
+                    push_to_github(current_ip)
+                    last_ip = current_ip
         
-        # Check every 5 minutes
         time.sleep(300)
 
 if __name__ == '__main__':

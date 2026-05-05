@@ -216,3 +216,42 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# --- Secrets & Config ---
+.env
+# Keep the example file but ignore local overrides
+!.env.example
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+# Distribution / Build
+build/
+dist/
+*.egg-info/
+# Virtual Environments
+.venv/
+venv/
+env/
+
+# --- Project Specific ---
+# The IP log file name should be ignored if it's strictly for runtime use,
+# but since your goal is to "check it in," you may want to track it.
+# If you want it tracked, do NOT add it here.
+
+# --- IDEs / Editors ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- System ---
+.DS_Store
+Thumbs.db
+
+# --- Testing ---
+.pytest_cache/
+.coverage
+htmlcov/
+

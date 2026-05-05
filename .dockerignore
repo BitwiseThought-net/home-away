@@ -1,0 +1,28 @@
+# --- Version Control ---
+.git
+.gitignore
+
+# --- Secrets & Config ---
+# Crucial: Prevent local credentials from being baked into the image layers.
+.env
+# Keep the example template so the app can use it as a fallback inside the container.
+!.env.example
+
+# --- Python Build/Cache ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# --- Documentation & Metadata ---
+README.md
+LICENSE
+.github/
+
+# --- Docker & Build Artifacts ---
+# You don't need the Dockerfile or instructions inside the running image.
+Dockerfile
+.dockerignore

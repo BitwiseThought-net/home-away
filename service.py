@@ -36,11 +36,12 @@ def ensure_repo_exists():
     token = os.getenv("GITHUB_PASSWORD")
     repo_url = os.getenv("GITHUB_REPO_URL", "")
     
-    # Extract repo name from URL (e.g., djdole/home-away -> home-away)
+    # Extract repo name from URL (e.g., user/home-away -> home-away)
     repo_name = repo_url.rstrip('/').split('/')[-1].replace('.git', '')
     
     auth = (user, token)
-    api_url = f"https://github.com{user}/{repo_name}"
+    # TRIPLE-CHECKED: Added the missing slash between .com and the /repos path
+    api_url = f"https://api.github.com/repos/{user}/{repo_name}"
     
     try:
         response = requests.get(api_url, auth=auth, timeout=10)
@@ -49,7 +50,7 @@ def ensure_repo_exists():
         
         if response.status_code == 404:
             logging.warning("Repository '%s' not found. Creating...", repo_name)
-            create_url = "https://github.com"
+            create_url = "https://api.github.com/user/repos"
             payload = {
                 "name": repo_name,
                 "private": True,
@@ -153,7 +154,7 @@ def main():
             # Configurable Interval logic
             try:
                 interval = int(os.getenv("CHECK_INTERVAL_SEC", "300"))
-            except ValueError:
+            except (ValueError, TypeError):
                 interval = 300
                 
             is_client = os.getenv("CLIENT", "false").lower() == "true"
@@ -161,7 +162,7 @@ def main():
                 data = pull_from_github()
                 if data and data.get("IP") != last_ip:
                     update_hosts_file(data["IP"], os.getenv("HOME_HOSTNAME"))
-                    last_ip = data["IP"]
+                    last_ip = data.get("IP")
             else:
                 current_ip = get_external_ip()
                 if current_ip and current_ip != last_ip:

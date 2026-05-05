@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  ip-tracker:
+    build: .
+    container_name: my-ip-tracker
+    # Ensures the service starts on boot or after a crash
+    restart: unless-stopped
+    volumes:
+      # Mount the current directory so the script can 
+      # create/read the .env file on your host machine
+      - .:/app
+      # LINUX USERS:
+      # - /etc/hosts:/app/hosts_mount
+      # WINDOWS USERS (Docker Desktop):
+      # - C:\Windows\System32\drivers\etc\hosts:/app/hosts_mount
+    # Prevents Python from buffering logs so you see 
+    # the .env alerts immediately
+    environment:
+      - PYTHONUNBUFFERED=1
+    labels:
+      - "autoheal=true"
+    healthcheck:
+      # Verifies the .env file exists and the tracker process is running
+      test: ["CMD-SHELL", "test -f .env && pgrep -f tracker.py > /dev/null"]
+      interval: 30s    # How often to check
+      timeout: 10s     # How long to wait for the check to finish
+      retries: 3       # Number of consecutive failures before marking 'unhealthy'
+      start_period: 5s # Grace period for initialization
+
+  # The auto-healing watchdog service
+  autoheal:
+    image: willfarrell/autoheal:latest
+    container_name: autoheal
+    restart: always
+    environment:
+      # Only watch containers with the 'autoheal=true' label
+      - AUTOHEAL_CONTAINER_LABEL=autoheal
+    volumes:
+      # Required to monitor other containers and issue restart commands
+      - /var/run/docker.sock:/var/run/docker.sock

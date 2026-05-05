@@ -1,0 +1,18 @@
+[MASTER]
+# Ignore the .env and virtual environments
+ignore=venv,.venv,env,.env
+
+[MESSAGES CONTROL]
+# Disable warnings that are overkill for a simple IP tracker
+disable=
+    missing-module-docstring,
+    missing-function-docstring,
+    missing-class-docstring,
+    logging-fstring-interpolation,
+    broad-except,
+    # GitPython's dynamic nature often confuses Pylint's static analysis
+    no-member
+
+[FORMAT]
+# Match Black's default line length (88) instead of Pylint's 100
+max-line-length=88

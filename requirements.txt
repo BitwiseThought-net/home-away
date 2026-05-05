@@ -1,0 +1,5 @@
+requests
+GitPython
+python-dotenv
+# Testing (optional if using built-in unittest, but good for local dev)
+pytest 

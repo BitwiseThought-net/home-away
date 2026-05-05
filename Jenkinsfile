@@ -16,6 +16,8 @@ pipeline {
                     script {
                         sh "[ -f '${envFile}' ] && cp '${envFile}' .env"
                         sh "cp ${envFile} .env"
+                        sh "Echo ${envFile}"
+                        sh "cat ${envFile}"
                         
                         sh '''if [ -f docker-compose.yml ]; then
                                 docker compose up -d --build

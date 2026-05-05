@@ -1,11 +1,5 @@
 # \# 🌍 Docker External IP Tracker
 
-# 
-
-# \[!\[Python Quality Check](https://github.com)](https://github.com)
-
-# 
-
 # \### 🚀 Elevator Pitch
 
 Never lose track of your home or office network's external IP address again. This lightweight Docker service monitors your internet-facing IP and automatically "checks it in" to a GitHub repository the moment it changes. It's a self-healing, DIY Dynamic DNS alternative that keeps a timestamped JSON history of your connectivity.

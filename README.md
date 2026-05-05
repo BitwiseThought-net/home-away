@@ -1,7 +1,5 @@
 # 🌍 Docker External IP Tracker & Remote Client
 
-[![Python Quality Check](https://github.com)](https://github.com)
-
 ### 🚀 Elevator Pitch
 A universal Docker utility for maintaining connectivity to dynamic networks. Deploy it as a **Server** to track your home's changing IP and log it to GitHub, or as a **Client** to automatically update your local `hosts` file so your "Home" hostname always points to the right place—no matter where you are in the world.
 

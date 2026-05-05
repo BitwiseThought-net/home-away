@@ -1,7 +1,7 @@
 import unittest
 import json
 from unittest.mock import patch, MagicMock, mock_open
-import tracker
+import service
 
 class TestIPTracker(unittest.TestCase):
 
@@ -9,27 +9,27 @@ class TestIPTracker(unittest.TestCase):
     def test_get_external_ip_success(self, mock_get):
         mock_get.return_value.text = "123.123.123.123"
         mock_get.return_value.status_code = 200
-        ip = tracker.get_external_ip()
+        ip = service.get_external_ip()
         self.assertEqual(ip, "123.123.123.123")
 
     @patch('os.path.exists')
     @patch('shutil.copy')
     def test_validate_env_missing_file(self, mock_copy, mock_exists):
         mock_exists.return_value = False
-        result = tracker.validate_env()
+        result = service.validate_env()
         self.assertFalse(result)
         mock_copy.assert_called_with(".env.example", ".env")
 
-    @patch('tracker.load_dotenv')
+    @patch('service.load_dotenv')
     @patch('os.getenv')
     @patch('os.path.exists')
     def test_validate_env_with_defaults(self, mock_exists, mock_getenv, _mock_load):
         mock_exists.return_value = True
         mock_getenv.side_effect = lambda k, default=None: "your_username" if k == "GITHUB_USERNAME" else "other"
-        result = tracker.validate_env()
+        result = service.validate_env()
         self.assertFalse(result)
 
-    @patch('tracker.Repo.clone_from')
+    @patch('service.Repo.clone_from')
     @patch('os.getenv')
     @patch('os.path.exists')
     @patch('shutil.rmtree')
@@ -44,9 +44,9 @@ class TestIPTracker(unittest.TestCase):
         mock_exists.return_value = True
         mock_repo = MagicMock()
         mock_clone.return_value = mock_repo
-        
+
         with patch("builtins.open", mock_open()) as mocked_file:
-            tracker.push_to_github("1.2.3.4")
+            service.push_to_github("1.2.3.4")
             written_data = "".join(call.args for call in mocked_file().write.call_args_list)
             data = json.loads(written_data)
             self.assertEqual(data["IP"], "1.2.3.4")
@@ -58,7 +58,7 @@ class TestIPTracker(unittest.TestCase):
         """Test that ensure_repo_exists returns True if repo is found."""
         mock_getenv.side_effect = lambda k, default=None: "test_val"
         mock_requests_get.return_value.status_code = 200
-        result = tracker.ensure_repo_exists()
+        result = service.ensure_repo_exists()
         self.assertTrue(result)
 
 if __name__ == "__main__":

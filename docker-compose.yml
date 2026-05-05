@@ -1,7 +1,7 @@
 services:
-  ip-tracker:
+  service:
+    container_name: HA-service
     build: .
-    container_name: my-ip-tracker
     # Ensures the service starts on boot or after a crash
     restart: unless-stopped
     volumes:
@@ -19,8 +19,8 @@ services:
     labels:
       - "autoheal=true"
     healthcheck:
-      # Verifies the .env file exists and the tracker process is running
-      test: ["CMD-SHELL", "test -f .env && pgrep -f tracker.py > /dev/null"]
+      # Verifies the .env file exists and the service process is running
+      test: ["CMD-SHELL", "test -f .env && pgrep -f service.py > /dev/null"]
       interval: 30s    # How often to check
       timeout: 10s     # How long to wait for the check to finish
       retries: 3       # Number of consecutive failures before marking 'unhealthy'
@@ -28,8 +28,8 @@ services:
 
   # The auto-healing watchdog service
   autoheal:
+    container_name: HA-autoheal
     image: willfarrell/autoheal:latest
-    container_name: autoheal
     restart: always
     environment:
       # Only watch containers with the 'autoheal=true' label

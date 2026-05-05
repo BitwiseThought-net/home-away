@@ -3,7 +3,7 @@
 ignore=venv,.venv,env,.env
 
 [MESSAGES CONTROL]
-# Disable warnings that are overkill for a simple IP tracker
+# Disable warnings that are overkill for a simple IP service
 disable=
     missing-module-docstring,
     missing-function-docstring,

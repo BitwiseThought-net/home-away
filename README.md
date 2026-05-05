@@ -52,7 +52,13 @@ If running in **CLIENT** mode, you must ensure your `docker-compose.yml` mounts 
 
 *   **Linux**: `- /etc/hosts:/app/hosts_mount`
 *   **Windows**: `- C:\Windows\System32\drivers\etc\hosts:/app/hosts_mount`
+*   
+### 5. Restart to Apply All Changes
+Once you have updated your `.env` file and ensured your `docker-compose.yml` has the correct volume mount for your OS, restart the service to initialize the tracker or client logic:
 
+```bash
+docker compose restart ip-tracker
+```
 ---
 
 ## 🔍 Monitoring & Health

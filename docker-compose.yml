@@ -1,20 +1,17 @@
 services:
   service:
-    container_name: HA-service
+    container_name: home-away-service
     build: .
     # Ensures the service starts on boot or after a crash
     restart: unless-stopped
     volumes:
-      # Mount the current directory so the script can 
-      # create/read the .env file on your host machine
       - .:/tmp
 #      - .:/app
+
       # LINUX USERS:
       # - /etc/hosts:/app/hosts_mount
       # WINDOWS USERS (Docker Desktop):
       # - C:\Windows\System32\drivers\etc\hosts:/app/hosts_mount
-    # Prevents Python from buffering logs so you see 
-    # the .env alerts immediately
     environment:
       - PYTHONUNBUFFERED=1
     labels:
@@ -29,7 +26,9 @@ services:
 
   # The auto-healing watchdog service
   autoheal:
-    container_name: HA-autoheal
+    container_name: home-away-autoheal
+    depends_on:
+      - service
     image: willfarrell/autoheal:latest
     restart: always
     environment:

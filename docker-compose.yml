@@ -7,7 +7,7 @@ services:
     volumes:
       # Mount the current directory so the script can 
       # create/read the .env file on your host machine
-      - .:/app
+#      - .:/app
       # LINUX USERS:
       # - /etc/hosts:/app/hosts_mount
       # WINDOWS USERS (Docker Desktop):

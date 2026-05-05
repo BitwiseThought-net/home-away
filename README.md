@@ -25,7 +25,7 @@ A universal Docker utility for maintaining connectivity to dynamic networks. Dep
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com
+git clone https://github.com/BitwiseThought-net/home-away.git
 cd home-away
 ```
 

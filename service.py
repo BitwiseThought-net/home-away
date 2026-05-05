@@ -36,11 +36,10 @@ def ensure_repo_exists():
     token = os.getenv("GITHUB_PASSWORD")
     repo_url = os.getenv("GITHUB_REPO_URL", "")
     
-    # Extract repo name from URL (e.g., user/home-away -> home-away)
     repo_name = repo_url.rstrip('/').split('/')[-1].replace('.git', '')
     
     auth = (user, token)
-    # TRIPLE-CHECKED: Added the missing slash between .com and the /repos path
+    
     api_url = f"https://api.github.com/repos/{user}/{repo_name}"
     
     try:
@@ -67,14 +66,12 @@ def ensure_repo_exists():
     return False
 
 def get_external_ip():
-    """Fetches current external IP with a fallback to avoid connection refused errors."""
-    # List of reliable providers to try in sequence
+    """Fetches IP with fallbacks to avoid connection refused errors."""
     providers = [
         'https://api64.ipify.org', # Handles IPv4/IPv6 better
         'https://icanhazip.com',   # Extremely reliable fallback
         'https://ifconfig.me'   # Second fallback
     ]
-    
     for url in providers:
         try:
             logging.info("Attempting to fetch IP from %s", url)
@@ -87,7 +84,6 @@ def get_external_ip():
             
     logging.error("All IP check providers failed.")
     return None
-
 
 def update_hosts_file(new_ip, hostname):
     """Updates the mounted hosts file with the new IP address."""
@@ -139,7 +135,7 @@ def push_to_github(new_ip):
     repo.index.add([log_file])
     repo.index.commit(f"Automated IP Update: {new_ip}")
     repo.remotes.origin.push()
-    logging.info("Pushed new IP to GitHub: %s", new_ip)
+    logging.info("IP change detected. Pushed new IP to GitHub: %s", new_ip)
 
 def pull_from_github():
     """Clones the repo and reads the current IP from the JSON log."""
@@ -174,11 +170,13 @@ def main():
             is_client = os.getenv("CLIENT", "false").lower() == "true"
             if is_client:
                 data = pull_from_github()
-                if data and data.get("IP") != last_ip:
-                    update_hosts_file(data["IP"], os.getenv("HOME_HOSTNAME"))
-                    last_ip = data.get("IP")
+                current_val = data.get("IP") if data else None
+                if current_val and current_val != last_ip:
+                    update_hosts_file(current_val, os.getenv("HOME_HOSTNAME"))
+                    last_ip = current_val
             else:
                 current_ip = get_external_ip()
+                # ONLY push if IP is found AND different from last check
                 if current_ip and current_ip != last_ip:
                     push_to_github(current_ip)
                     last_ip = current_ip

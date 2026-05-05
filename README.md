@@ -57,7 +57,7 @@ If running in **CLIENT** mode, you must ensure your `docker-compose.yml` mounts 
 Once you have updated your `.env` file and ensured your `docker-compose.yml` has the correct volume mount for your OS, restart the service to initialize the tracker or client logic:
 
 ```bash
-docker compose restart ip-tracker
+docker compose restart service
 ```
 ---
 
@@ -74,7 +74,7 @@ docker compose logs -f
 The project includes a suite of unit tests that mock network and filesystem operations.
 ```bash
 pip install -r requirements.txt
-python -m unittest test_tracker.py
+python -m unittest test_service.py
 ```
 
 ---

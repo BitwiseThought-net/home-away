@@ -36,7 +36,7 @@ def ensure_repo_exists():
     token = os.getenv("GITHUB_PASSWORD")
     repo_url = os.getenv("GITHUB_REPO_URL", "")
     
-    # Extract repo name from URL
+    # Extract repo name from URL (e.g., djdole/home-away -> home-away)
     repo_name = repo_url.rstrip('/').split('/')[-1].replace('.git', '')
     
     auth = (user, token)
@@ -48,22 +48,19 @@ def ensure_repo_exists():
             return True
         
         if response.status_code == 404:
-            logging.warning("Repository '%s' not found. Attempting to create it...", repo_name)
+            logging.warning("Repository '%s' not found. Creating...", repo_name)
+            create_url = "https://github.com"
             payload = {
                 "name": repo_name,
                 "private": True,
                 "auto_init": True
             }
-            create_res = requests.post(
-                "https://github.com",
-                auth=auth,
-                json=payload,
-                timeout=10
-            )
+            create_res = requests.post(create_url, auth=auth, json=payload, timeout=10)
             if create_res.status_code == 201:
                 logging.info("Successfully created repository: %s", repo_name)
-                time.sleep(5)  # Wait for GitHub to initialize auto_init files
+                time.sleep(5)  # Wait for GitHub to initialize
                 return True
+            logging.error("Failed to create repo: %s", create_res.text)
     except Exception as e:
         logging.error("Error checking/creating repo: %s", e)
     return False
@@ -153,7 +150,7 @@ def main():
     
     while True:
         if validate_env() and ensure_repo_exists():
-            # Configurable Interval
+            # Configurable Interval logic
             try:
                 interval = int(os.getenv("CHECK_INTERVAL_SEC", "300"))
             except ValueError:
@@ -173,7 +170,9 @@ def main():
             
             time.sleep(interval)
         else:
+            # If validation/repo check fails, wait 60s before retry
             time.sleep(60)
 
 if __name__ == '__main__':
     main()
+

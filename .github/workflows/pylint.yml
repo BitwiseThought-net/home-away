@@ -33,7 +33,7 @@ jobs:
         run: black .
 
       - name: Run Unit Tests
-        run: python -m unittest test_tracker.py
+        run: python -m unittest test_service.py
 
       - name: Run Pylint to Verify Quality
         run: pylint $(git ls-files '*.py')

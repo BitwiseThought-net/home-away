@@ -67,13 +67,27 @@ def ensure_repo_exists():
     return False
 
 def get_external_ip():
-    """Fetches the current external IP address."""
-    try:
-        response = requests.get('https://ipify.org', timeout=10)
-        return response.text
-    except Exception as err:
-        logging.error("IP check failed: %s", err)
-        return None
+    """Fetches current external IP with a fallback to avoid connection refused errors."""
+    # List of reliable providers to try in sequence
+    providers = [
+        'https://api64.ipify.org', # Handles IPv4/IPv6 better
+        'https://icanhazip.com',   # Extremely reliable fallback
+        'https://ifconfig.me'   # Second fallback
+    ]
+    
+    for url in providers:
+        try:
+            logging.info("Attempting to fetch IP from %s", url)
+            response = requests.get(url, timeout=10)
+            if response.status_code == 200:
+                return response.text.strip()
+        except Exception as err:
+            logging.warning("Failed to reach %s: %s", url, err)
+            continue # Try the next provider
+            
+    logging.error("All IP check providers failed.")
+    return None
+
 
 def update_hosts_file(new_ip, hostname):
     """Updates the mounted hosts file with the new IP address."""

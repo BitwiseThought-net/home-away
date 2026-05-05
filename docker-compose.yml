@@ -5,8 +5,7 @@ services:
     # Ensures the service starts on boot or after a crash
     restart: unless-stopped
     volumes:
-      - .:/tmp
-#      - .:/app
+      - .:/app
 
       # LINUX USERS:
       # - /etc/hosts:/app/hosts_mount

@@ -5,9 +5,9 @@ import tracker
 
 class TestIPTracker(unittest.TestCase):
 
-    # Patching 'requests.get' directly is safer than 'tracker.requests.get'
     @patch('requests.get')
     def test_get_external_ip_success(self, mock_get):
+        """Test successful IP retrieval from api.ipify.org."""
         mock_get.return_value.text = "123.123.123.123"
         mock_get.return_value.status_code = 200
         ip = tracker.get_external_ip()
@@ -16,7 +16,7 @@ class TestIPTracker(unittest.TestCase):
     @patch('os.path.exists')
     @patch('shutil.copy')
     def test_validate_env_missing_file(self, mock_copy, mock_exists):
-        # We tell the code the .env file doesn't exist
+        """Test that .env is created from example if it doesn't exist."""
         mock_exists.return_value = False
         result = tracker.validate_env()
         self.assertFalse(result)
@@ -26,8 +26,9 @@ class TestIPTracker(unittest.TestCase):
     @patch('os.getenv')
     @patch('os.path.exists')
     def test_validate_env_with_defaults(self, mock_exists, mock_getenv, _mock_load):
+        """Test that validation fails if user hasn't changed default credentials."""
         mock_exists.return_value = True
-        # Simulate env variables still being set to default placeholders
+        # Handle the default parameter in getenv to prevent crashes
         mock_getenv.side_effect = lambda k, default=None: "your_username" if k == "GITHUB_USERNAME" else "other"
         
         result = tracker.validate_env()
@@ -38,6 +39,7 @@ class TestIPTracker(unittest.TestCase):
     @patch('os.path.exists')
     @patch('shutil.rmtree')
     def test_push_to_github_json_structure(self, _mock_rm, mock_exists, mock_getenv, mock_clone):
+        """Test that the updated file is valid JSON with the correct keys."""
         env_vars = {
             "GITHUB_USERNAME": "test_user",
             "GITHUB_PASSWORD": "test_password",
@@ -51,11 +53,9 @@ class TestIPTracker(unittest.TestCase):
         
         with patch("builtins.open", mock_open()) as mocked_file:
             tracker.push_to_github("1.2.3.4")
-            
             # Combine all write calls to rebuild the JSON string
             written_data = "".join(call.args[0] for call in mocked_file().write.call_args_list)
             data = json.loads(written_data)
-            
             self.assertEqual(data["IP"], "1.2.3.4")
             self.assertIn("Last_Modified", data)
 

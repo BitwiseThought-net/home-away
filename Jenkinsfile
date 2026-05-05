@@ -23,9 +23,6 @@ pipeline {
                                 exit 0
                               fi
                         '''
-                        
-                        // 3. Clean up the .env file after deployment (optional but safer)
-                        sh "[ -f .env ] && rm .env"
                     }
                 }
             }

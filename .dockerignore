@@ -17,6 +17,14 @@ venv/
 env/
 .pytest_cache/
 
+# --- Testing ---
+tests/
+pytest.ini
+requirements-dev.txt
+badges/
+.coverage
+htmlcov/
+
 # --- Documentation & Metadata ---
 README.md
 LICENSE

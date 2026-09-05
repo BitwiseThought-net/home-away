@@ -1,3 +1,7 @@
+[![Tests](https://github.com/BitwiseThought-net/home-away/actions/workflows/tests-python.yml/badge.svg)](https://github.com/BitwiseThought-net/home-away/actions/workflows/tests-python.yml)
+[![Coverage](https://raw.githubusercontent.com/BitwiseThought-net/home-away/main/badges/coverage-badge.svg)](https://github.com/BitwiseThought-net/home-away/actions/workflows/tests-python.yml)
+[![Tests Passing](https://raw.githubusercontent.com/BitwiseThought-net/home-away/main/badges/tests-badge.svg)](https://github.com/BitwiseThought-net/home-away/actions/workflows/tests-python.yml)
+
 # 🌍 Docker External IP Tracker & Remote Client
 
 ### 🚀 What is this all about??
@@ -71,11 +75,30 @@ docker compose logs -f
 ```
 
 ## 🧪 Testing
-The project includes a suite of unit tests that mock network and filesystem operations.
+The project includes a pytest suite in `tests/` that mocks network, filesystem,
+and Git operations so it runs fully offline.
 ```bash
 pip install -r requirements.txt
-python -m unittest test_service.py
+pip install -r requirements-dev.txt
+pytest
 ```
+
+To reproduce the coverage report and badges shown above locally:
+```bash
+pytest -q \
+  --cov=service \
+  --cov-report=term-missing \
+  --cov-report=xml:coverage.xml \
+  --junitxml=pytest-results.xml
+
+mkdir -p badges
+genbadge coverage -i coverage.xml -o badges/coverage-badge.svg --local
+genbadge tests -i pytest-results.xml -o badges/tests-badge.svg --local
+```
+
+On every pull request, `.github/workflows/tests-python.yml` runs this same suite,
+posts a coverage summary as a PR comment, and commits the refreshed
+`badges/*.svg` files back to the branch.
 
 ---
 
